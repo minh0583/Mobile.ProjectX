@@ -5,6 +5,9 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import org.apache.http.HttpResponse;
@@ -18,18 +21,34 @@ import java.io.InputStream;
 import java.util.UUID;
 
 import gps.common.GpsServiceInterface;
+import gps.common.Utils;
 import gps.common.models.LocationModel;
 import gps.services.GpsService;
 
 public class MainActivity extends ActionBarActivity {
 
-    TextView txt;
+    EditText txtDeviceID;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //set up notitle
+
         setContentView(R.layout.activity_main);
-        txt = (TextView) findViewById(R.id.txtVerifyCode);
+
+
+        //requestWindowFeature(Window.FEATURE_NO_TITLE);
+        //set up full screen
+        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        //
+        txtDeviceID = (EditText) findViewById(R.id.txtDeviceID);
+
+        InitialData();
+    }
+
+    private void InitialData(){
+        txtDeviceID.setText(Utils.getDeviceID(getApplicationContext()));
     }
 
 
@@ -102,10 +121,10 @@ public class MainActivity extends ActionBarActivity {
             // 9. receive response as inputStream
             inputStream = httpResponse.getEntity().getContent();
 
-            txt.setText("OK");
+            //txt.setText("OK");
         } catch (Exception e) {
             //Log.d("InputStream", e.getLocalizedMessage());
-            txt.setText(e.getLocalizedMessage());
+            //txt.setText(e.getLocalizedMessage());
         }
     }
 }
