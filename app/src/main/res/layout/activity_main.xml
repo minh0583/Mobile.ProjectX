@@ -8,8 +8,7 @@
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
         android:scaleType="centerCrop"
-        android:src="@drawable/main_background"
-        android:contentDescription="@string/asdf">
+        android:src="@drawable/main_background">
     </ImageView>
 
     <EditText
@@ -22,7 +21,6 @@
         android:width="300dp"
         android:background="#ffffffff"
         android:height="50dp"
-        android:hint="@string/deviceID"
         android:textColor="@android:color/darker_gray"
         android:textColorHint="@android:color/darker_gray"
         android:textAlignment="center"
