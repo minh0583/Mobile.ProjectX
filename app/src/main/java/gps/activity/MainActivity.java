@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -28,6 +29,8 @@ import gps.services.GpsService;
 public class MainActivity extends ActionBarActivity {
 
     EditText txtDeviceID;
+    EditText txtLicenseNumber;
+    Button btnActive;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +46,9 @@ public class MainActivity extends ActionBarActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         //
         txtDeviceID = (EditText) findViewById(R.id.txtDeviceID);
+        txtLicenseNumber = (EditText) findViewById(R.id.txtLicenseNumber);
+        btnActive = (Button)findViewById(R.id.btnActive);
+
 
         InitialData();
     }
@@ -72,6 +78,72 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void activeDevice(View view){
+        Thread thread = new Thread(new Runnable(){
+            @Override
+            public void run() {
+                try {
+                    //Your code goes here
+                    DoPostData(txtDeviceID.getText().toString(), txtLicenseNumber.getText().toString());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        thread.start();
+
+
+    }
+
+    public void DoPostData(String deviceId, String licenseNumber){
+        InputStream inputStream = null;
+        String result = "";
+        try {
+
+            // 1. create HttpClient
+            HttpClient httpclient = new DefaultHttpClient();
+
+            // 2. make POST request to the given URL
+            HttpPost httpPost = new HttpPost("http://www.license.somee.com/LicenseService.svc/ActiveDevice");
+
+            String json = "";
+
+            // 3. build jsonObject
+            JSONObject jsonObject = new JSONObject();
+            jsonObject.accumulate("DeviceID", deviceId);
+            jsonObject.accumulate("LicenseNumber", licenseNumber);
+
+            // 4. convert JSONObject to JSON to String
+            json = jsonObject.toString();
+
+            // ** Alternative way to convert Person object to JSON string usin Jackson Lib
+            // ObjectMapper mapper = new ObjectMapper();
+            // json = mapper.writeValueAsString(person);
+
+            // 5. set json to StringEntity
+            StringEntity se = new StringEntity(json);
+
+            // 6. set httpPost Entity
+            httpPost.setEntity(se);
+
+            // 7. Set some headers to inform server about the type of the content
+            httpPost.setHeader("Content-type", "application/json");
+
+            // 8. Execute POST request to the given URL
+            HttpResponse httpResponse = httpclient.execute(httpPost);
+
+            // 9. receive response as inputStream
+            inputStream = httpResponse.getEntity().getContent();
+
+            //txt.setText("OK");
+        } catch (Exception e) {
+            //Log.d("InputStream", e.getLocalizedMessage());
+            //txt.setText(e.getLocalizedMessage());
+            String ab = e.getLocalizedMessage();
+        }
     }
 
     public void abc(View view) {
