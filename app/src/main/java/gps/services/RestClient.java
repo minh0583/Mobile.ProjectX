@@ -7,6 +7,7 @@ import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 
@@ -43,11 +44,21 @@ public class RestClient {
 
         DefaultHttpClient client = new DefaultHttpClient();
 
-        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
-        pairs.add(new BasicNameValuePair("JSON", asJson));
-        httpPostRequest.setEntity(new UrlEncodedFormEntity(pairs));
+        httpPostRequest.setHeader("Content-Type","application/json");
+
+//        List<NameValuePair> pairs = new ArrayList<NameValuePair>();
+//        pairs.add(new BasicNameValuePair("JSON", asJson));
+//        httpPostRequest.setEntity(new UrlEncodedFormEntity(pairs));
+        httpPostRequest.setEntity(new StringEntity(asJson));
+
 
         HttpResponse response = client.execute(httpPostRequest);
+
+        int a = response.getStatusLine().getStatusCode();
+
+        int b = a;
+
+
     }
 
     public void pushLocation(LocationObj locationObj){
