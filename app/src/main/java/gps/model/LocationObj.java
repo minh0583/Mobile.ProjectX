@@ -7,11 +7,17 @@ import com.google.gson.annotations.SerializedName;
  */
 public class LocationObj {
 
+    @SerializedName("LicenseNumber")
+    public String licenseNumber;
+
     @SerializedName("ID")
     public String id;
 
     @SerializedName("Decription")
     public String decription;
+
+    @SerializedName("LastChanged")
+    public String lastChanged;
 
     @SerializedName("LastChangedBy")
     public String lastChangedBy;
