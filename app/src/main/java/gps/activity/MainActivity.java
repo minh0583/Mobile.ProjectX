@@ -1,15 +1,18 @@
 package gps.activity;
 
+import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
+
+import com.androidquery.AQuery;
+import com.androidquery.callback.AjaxCallback;
+import com.androidquery.callback.AjaxStatus;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -17,14 +20,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONObject;
-
 import java.io.InputStream;
-import java.util.UUID;
-
-import gps.common.GpsServiceInterface;
 import gps.common.Utils;
 import gps.common.models.LocationModel;
-import gps.services.GpsService;
 
 public class MainActivity extends ActionBarActivity {
 
@@ -35,28 +33,24 @@ public class MainActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        //set up notitle
-
         setContentView(R.layout.activity_main);
 
-
-        //requestWindowFeature(Window.FEATURE_NO_TITLE);
-        //set up full screen
+        //set up no title
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
-        //
+
+        renderContent(getApplicationContext(), getWindow().getDecorView().getRootView());
+
         txtDeviceID = (EditText) findViewById(R.id.txtDeviceID);
         txtLicenseNumber = (EditText) findViewById(R.id.txtLicenseNumber);
         btnActive = (Button)findViewById(R.id.btnActive);
 
-
-        InitialData();
     }
 
-    private void InitialData(){
-        txtDeviceID.setText(Utils.getDeviceID(getApplicationContext()));
+    public void renderContent(Context context, View view){
+        AQuery aq = new AQuery(view);
+        aq.id(R.id.txtDeviceID).text(Utils.getDeviceID(context));
     }
-
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -81,22 +75,26 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void activeDevice(View view){
-        Thread thread = new Thread(new Runnable(){
+        AQuery aq = new AQuery(view);
+        //String deviceId = aq.id(R.id.txtDeviceID).getText().toString();
+        //String licenseNumber = aq.id(R.id.txtLicenseNumber).getText().toString();
+
+        JSONObject jsonObject = new JSONObject();
+        //jsonObject.putOpt("","");
+        //jsonObject.accumulate("DeviceID", "deviceId");
+        //jsonObject.accumulate("LicenseNumber", "licenseNumber");
+
+        String url = "http://www.license.somee.com/LicenseService.svc/ActiveDevice";
+
+        aq.post(url, jsonObject, JSONObject.class, new AjaxCallback<JSONObject>(){
             @Override
-            public void run() {
-                try {
-                    //Your code goes here
-                    DoPostData(txtDeviceID.getText().toString(), txtLicenseNumber.getText().toString());
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+            public void callback(String url, JSONObject object, AjaxStatus status) {
+                //super.callback(url, object, status);
             }
         });
-
-        thread.start();
-
-
     }
+
+
 
     public void DoPostData(String deviceId, String licenseNumber){
         InputStream inputStream = null;

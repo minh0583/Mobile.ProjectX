@@ -34,10 +34,10 @@
         android:layout_height="wrap_content"
         android:text="Active"
         android:id="@+id/btnActive"
-        android:layout_marginTop="27dp"
-        android:layout_below="@+id/editText3"
-        android:layout_centerHorizontal="true"
-        android:onClick="activeDevice" />
+        android:layout_marginTop="24dp"
+        android:onClick="activeDevice"
+        android:layout_below="@+id/txtLicenseNumber"
+        android:layout_centerHorizontal="true" />
 
     <EditText
         android:layout_width="wrap_content"
@@ -59,13 +59,12 @@
         android:hint="License key"
         android:textColor="@android:color/darker_gray"
         android:textColorHint="@android:color/darker_gray"
-        android:layout_below="@+id/txtDeviceID"
-        android:layout_alignLeft="@+id/editText2"
-        android:layout_alignStart="@+id/editText2"
-        android:layout_marginTop="30dp"
         android:textAlignment="center"
         android:textStyle="bold"
         android:paddingLeft="10dp"
-        android:text="3E168DB31E943EAE8697C673EAA31EAD" />
+        android:text="3E168DB31E943EAE8697C673EAA31EAD"
+        android:layout_below="@+id/txtDeviceID"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="27dp" />
 
 </RelativeLayout>

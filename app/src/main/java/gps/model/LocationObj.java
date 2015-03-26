@@ -2,7 +2,7 @@ package gps.model;
 
 import com.google.gson.annotations.SerializedName;
 
-/**
+ /**
  * Created by NhatHoang on 3/25/2015.
  */
 public class LocationObj {
