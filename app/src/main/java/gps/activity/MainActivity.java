@@ -1,5 +1,6 @@
 package gps.activity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -13,22 +14,28 @@ import android.widget.EditText;
 import com.androidquery.AQuery;
 import com.androidquery.callback.AjaxCallback;
 import com.androidquery.callback.AjaxStatus;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.InputStream;
 import gps.common.Utils;
 import gps.common.models.LocationModel;
+import gps.model.LicenseModel;
 
 public class MainActivity extends ActionBarActivity {
 
     EditText txtDeviceID;
     EditText txtLicenseNumber;
     Button btnActive;
+    private ProgressDialog progressdialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,21 +82,33 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void activeDevice(View view){
-        AQuery aq = new AQuery(view);
-        //String deviceId = aq.id(R.id.txtDeviceID).getText().toString();
-        //String licenseNumber = aq.id(R.id.txtLicenseNumber).getText().toString();
+        AQuery aq = new AQuery(getWindow().getDecorView().getRootView());
+        LicenseModel model = new LicenseModel();
+        model.DeviceID = aq.id(R.id.txtDeviceID).getText().toString();
+        model.LicenseNumber = aq.id(R.id.txtLicenseNumber).getText().toString();
 
-        JSONObject jsonObject = new JSONObject();
-        //jsonObject.putOpt("","");
-        //jsonObject.accumulate("DeviceID", "deviceId");
-        //jsonObject.accumulate("LicenseNumber", "licenseNumber");
+        JSONObject jsonObj = new JSONObject();
+        try {
+            jsonObj.accumulate("DeviceID", model.DeviceID);
+            jsonObj.accumulate("LicenseNumber", model.LicenseNumber);
+        }
+        catch (JSONException e) { }
+
 
         String url = "http://www.license.somee.com/LicenseService.svc/ActiveDevice";
 
-        aq.post(url, jsonObject, JSONObject.class, new AjaxCallback<JSONObject>(){
+        aq.post(url, jsonObj, JSONObject.class, new AjaxCallback<JSONObject>(){
+            @Override
+            protected void showProgress(boolean show) {
+                //super.showProgress(show);
+                progressdialog = new ProgressDialog(MainActivity.this);
+                progressdialog.setMessage("Just a moment...");
+                progressdialog.show();
+            }
+
             @Override
             public void callback(String url, JSONObject object, AjaxStatus status) {
-                //super.callback(url, object, status);
+                progressdialog.hide();
             }
         });
     }

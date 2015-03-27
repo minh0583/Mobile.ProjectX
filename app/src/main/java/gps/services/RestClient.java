@@ -3,19 +3,14 @@ package gps.services;
 import com.google.gson.Gson;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 
-import gps.model.LocationObj;
+import gps.model.LocationModel;
 
 /**
  * Created by NhatHoang on 3/25/2015.
@@ -26,7 +21,7 @@ public class RestClient {
 
     private static RestClient instance;
 
-    private LocationObj locationObj;
+    private LocationModel locationModel;
 
     public  static  RestClient getInstancePushLocation(){
         instance = new RestClient("http://www.minh0583.somee.com/service.svc/PushLocation");
@@ -40,7 +35,7 @@ public class RestClient {
     public void sendHttpPost() throws ClientProtocolException, IOException {
         HttpPost httpPostRequest = new HttpPost(url);
 
-        String asJson = new Gson().toJson(this.locationObj);
+        String asJson = new Gson().toJson(this.locationModel);
 
         DefaultHttpClient client = new DefaultHttpClient();
 
@@ -61,7 +56,7 @@ public class RestClient {
 
     }
 
-    public void pushLocation(LocationObj locationObj){
-        this.locationObj = locationObj;
+    public void pushLocation(LocationModel locationModel){
+        this.locationModel = locationModel;
     }
 }

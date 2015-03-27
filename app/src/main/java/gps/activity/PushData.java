@@ -10,8 +10,7 @@ import android.view.View;
 
 import java.io.IOException;
 
-import gps.activity.R;
-import gps.model.LocationObj;
+import gps.model.LocationModel;
 import gps.services.RestClient;
 
 public class PushData extends ActionBarActivity {
@@ -63,16 +62,15 @@ public class PushData extends ActionBarActivity {
             @Override
             protected Void doInBackground(Void... params) {
 
-                LocationObj locationObj = new LocationObj();
-                locationObj.decription = "Test Data 1";
-                locationObj.licenseNumber = "";
-                locationObj.id = "00000000-0000-0000-0000-000000000000";
-                locationObj.lastChangedBy = "";
-                locationObj.lastChanged = "";
-                locationObj.latitude = 18;
-                locationObj.longitude = -72;
+                LocationModel locationModel = new LocationModel();
+                locationModel.decription = "Test Data 1";
+                //locationModel.id = "00000000-0000-0000-0000-000000000000";
+                //locationModel.lastChangedBy = "";
+                //locationModel.lastChanged = "";
+                locationModel.latitude = 18;
+                locationModel.longitude = -72;
 
-                restClient.pushLocation(locationObj);
+                restClient.pushLocation(locationModel);
 
                 try {
                     restClient.sendHttpPost();
