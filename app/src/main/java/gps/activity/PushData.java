@@ -47,48 +47,12 @@ public class PushData extends ActionBarActivity {
     }
 
     public void pushLocation(View view) {
+        LocationModel locationModel = new LocationModel();
+        locationModel.decription = "Test Data 1";
+        locationModel.latitude = 18;
+        locationModel.longitude = -72;
 
-        final RestClient restClient = RestClient.getInstancePushLocation();
-
-        AsyncTask<Void, Void, Void> task = new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected void onPreExecute() {
-                super.onPreExecute();
-                progressdialog = new ProgressDialog(PushData.this);
-                progressdialog.setMessage("Just a moment...");
-                progressdialog.show();
-            }
-
-            @Override
-            protected Void doInBackground(Void... params) {
-
-                LocationModel locationModel = new LocationModel();
-                locationModel.decription = "Test Data 1";
-                //locationModel.id = "00000000-0000-0000-0000-000000000000";
-                //locationModel.lastChangedBy = "";
-                //locationModel.lastChanged = "";
-                locationModel.latitude = 18;
-                locationModel.longitude = -72;
-
-                restClient.pushLocation(locationModel);
-
-                try {
-                    restClient.sendHttpPost();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-
-                progressdialog.dismiss();
-
-
-            }
-        };task.execute((Void[]) null);
-
+        RestClient client = RestClient.getInstancePushLocation(PushData.this);
+        client.doPost(locationModel);
     }
 }

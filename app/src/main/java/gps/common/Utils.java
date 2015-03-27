@@ -2,6 +2,7 @@ package gps.common;
 
 import android.content.Context;
 import android.provider.Settings.Secure;
+import android.view.View;
 
 /**
  * Created by ADMIN on 3/24/2015.
@@ -14,4 +15,5 @@ public class Utils {
         }
         return str;
     }
+
 }

@@ -2,40 +2,21 @@ package gps.activity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.EditText;
-
 import com.androidquery.AQuery;
-import com.androidquery.callback.AjaxCallback;
-import com.androidquery.callback.AjaxStatus;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.json.JSONException;
-import org.json.JSONObject;
-import java.io.InputStream;
+import java.io.IOException;
 import gps.common.Utils;
-import gps.common.models.LocationModel;
 import gps.model.LicenseModel;
+import gps.services.RestClient;
 
 public class MainActivity extends ActionBarActivity {
 
-    EditText txtDeviceID;
-    EditText txtLicenseNumber;
-    Button btnActive;
-    private ProgressDialog progressdialog;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,11 +28,6 @@ public class MainActivity extends ActionBarActivity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         renderContent(getApplicationContext(), getWindow().getDecorView().getRootView());
-
-        txtDeviceID = (EditText) findViewById(R.id.txtDeviceID);
-        txtLicenseNumber = (EditText) findViewById(R.id.txtLicenseNumber);
-        btnActive = (Button)findViewById(R.id.btnActive);
-
     }
 
     public void renderContent(Context context, View view){
@@ -82,138 +58,12 @@ public class MainActivity extends ActionBarActivity {
     }
 
     public void activeDevice(View view){
-        AQuery aq = new AQuery(getWindow().getDecorView().getRootView());
+        AQuery aq = new AQuery(view.getRootView());
         LicenseModel model = new LicenseModel();
         model.DeviceID = aq.id(R.id.txtDeviceID).getText().toString();
         model.LicenseNumber = aq.id(R.id.txtLicenseNumber).getText().toString();
-
-        JSONObject jsonObj = new JSONObject();
-        try {
-            jsonObj.accumulate("DeviceID", model.DeviceID);
-            jsonObj.accumulate("LicenseNumber", model.LicenseNumber);
-        }
-        catch (JSONException e) { }
-
-
-        String url = "http://www.license.somee.com/LicenseService.svc/ActiveDevice";
-
-        aq.post(url, jsonObj, JSONObject.class, new AjaxCallback<JSONObject>(){
-            @Override
-            protected void showProgress(boolean show) {
-                //super.showProgress(show);
-                progressdialog = new ProgressDialog(MainActivity.this);
-                progressdialog.setMessage("Just a moment...");
-                progressdialog.show();
-            }
-
-            @Override
-            public void callback(String url, JSONObject object, AjaxStatus status) {
-                progressdialog.hide();
-            }
-        });
+        RestClient client = RestClient.getInstancePushLocation(MainActivity.this, "http://www.license.somee.com/LicenseService.svc/ActiveDevice");
+        client.doPost(model);
     }
 
-
-
-    public void DoPostData(String deviceId, String licenseNumber){
-        InputStream inputStream = null;
-        String result = "";
-        try {
-
-            // 1. create HttpClient
-            HttpClient httpclient = new DefaultHttpClient();
-
-            // 2. make POST request to the given URL
-            HttpPost httpPost = new HttpPost("http://www.license.somee.com/LicenseService.svc/ActiveDevice");
-
-            String json = "";
-
-            // 3. build jsonObject
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.accumulate("DeviceID", deviceId);
-            jsonObject.accumulate("LicenseNumber", licenseNumber);
-
-            // 4. convert JSONObject to JSON to String
-            json = jsonObject.toString();
-
-            // ** Alternative way to convert Person object to JSON string usin Jackson Lib
-            // ObjectMapper mapper = new ObjectMapper();
-            // json = mapper.writeValueAsString(person);
-
-            // 5. set json to StringEntity
-            StringEntity se = new StringEntity(json);
-
-            // 6. set httpPost Entity
-            httpPost.setEntity(se);
-
-            // 7. Set some headers to inform server about the type of the content
-            httpPost.setHeader("Content-type", "application/json");
-
-            // 8. Execute POST request to the given URL
-            HttpResponse httpResponse = httpclient.execute(httpPost);
-
-            // 9. receive response as inputStream
-            inputStream = httpResponse.getEntity().getContent();
-
-            //txt.setText("OK");
-        } catch (Exception e) {
-            //Log.d("InputStream", e.getLocalizedMessage());
-            //txt.setText(e.getLocalizedMessage());
-            String ab = e.getLocalizedMessage();
-        }
-    }
-
-    public void abc(View view) {
-        LocationModel data = new LocationModel();
-        data.decription = "minh 03/24/2015";
-        data.latitude = 1;
-        data.longitude = 1;
-
-        InputStream inputStream = null;
-        String result = "";
-        try {
-
-            // 1. create HttpClient
-            HttpClient httpclient = new DefaultHttpClient();
-
-            // 2. make POST request to the given URL
-            HttpPost httpPost = new HttpPost("http://minh0583.somee.com/service.svc/PushLocation");
-
-            String json = "";
-
-            // 3. build jsonObject
-            JSONObject jsonObject = new JSONObject();
-            jsonObject.accumulate("Decription", data.decription);
-            jsonObject.accumulate("Latitude", data.latitude);
-            jsonObject.accumulate("Longitude", data.longitude);
-
-            // 4. convert JSONObject to JSON to String
-            json = jsonObject.toString();
-
-            // ** Alternative way to convert Person object to JSON string usin Jackson Lib
-            // ObjectMapper mapper = new ObjectMapper();
-            // json = mapper.writeValueAsString(person);
-
-            // 5. set json to StringEntity
-            StringEntity se = new StringEntity(json);
-
-            // 6. set httpPost Entity
-            httpPost.setEntity(se);
-
-            // 7. Set some headers to inform server about the type of the content
-            httpPost.setHeader("Accept", "application/json");
-            httpPost.setHeader("Content-type", "application/json");
-
-            // 8. Execute POST request to the given URL
-            HttpResponse httpResponse = httpclient.execute(httpPost);
-
-            // 9. receive response as inputStream
-            inputStream = httpResponse.getEntity().getContent();
-
-            //txt.setText("OK");
-        } catch (Exception e) {
-            //Log.d("InputStream", e.getLocalizedMessage());
-            //txt.setText(e.getLocalizedMessage());
-        }
-    }
 }
