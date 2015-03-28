@@ -11,6 +11,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.util.EntityUtils;
 
 import java.io.IOException;
 
@@ -18,7 +19,11 @@ import java.io.IOException;
  * Created by NhatHoang on 3/25/2015.
  */
 public class RestClient<T> {
+    public static ICallBack callback;
+
     private ProgressDialog progressdialog;
+
+    public static boolean isSuccess;
 
     private String url;
 
@@ -27,6 +32,10 @@ public class RestClient<T> {
     private static RestClient instance;
 
     private T postData;
+
+    void onEvent(){
+        callback.callBackCall();
+    }
 
     public static RestClient getInstancePushLocation(Context appContext){
         context = appContext;
@@ -65,6 +74,8 @@ public class RestClient<T> {
                     httpPostRequest.setHeader("Content-Type","application/json");
                     httpPostRequest.setEntity(new StringEntity(asJson));
                     HttpResponse response = client.execute(httpPostRequest);
+                    String result = EntityUtils.toString(response.getEntity());
+                    isSuccess = result.equals("true");
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -74,6 +85,7 @@ public class RestClient<T> {
 
             @Override
             protected void onPostExecute(Void aVoid) {
+                onEvent();
                 progressdialog.dismiss();
             }
         };

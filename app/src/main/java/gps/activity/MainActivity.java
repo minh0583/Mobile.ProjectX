@@ -1,8 +1,7 @@
 package gps.activity;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
@@ -10,9 +9,9 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import com.androidquery.AQuery;
-import java.io.IOException;
 import gps.common.Utils;
 import gps.model.LicenseModel;
+import gps.services.ICallBack;
 import gps.services.RestClient;
 
 public class MainActivity extends ActionBarActivity {
@@ -29,6 +28,30 @@ public class MainActivity extends ActionBarActivity {
 
         renderContent(getApplicationContext(), getWindow().getDecorView().getRootView());
     }
+
+    @Override
+    protected void onStart()
+    {
+        // TODO Auto-generated method stub
+        //verify device
+        final RestClient client = RestClient.getInstancePushLocation(MainActivity.this, "http://www.license.somee.com/LicenseService.svc/VerifyDevice");
+        client.doPost(Utils.getDeviceID(getApplicationContext()));
+        client.callback = new ICallBack() {
+            @Override
+            public void callBackCall() {
+                if (client.isSuccess){
+                    StartPushDataActivity();
+                }
+            }
+        };
+        super.onStart();
+    }
+
+    private void StartPushDataActivity(){
+        Intent menuIntent = new Intent(this, PushData.class);
+        startActivity(menuIntent);
+    }
+
 
     public void renderContent(Context context, View view){
         AQuery aq = new AQuery(view);
@@ -59,11 +82,23 @@ public class MainActivity extends ActionBarActivity {
 
     public void activeDevice(View view){
         AQuery aq = new AQuery(view.getRootView());
+
         LicenseModel model = new LicenseModel();
         model.DeviceID = aq.id(R.id.txtDeviceID).getText().toString();
         model.LicenseNumber = aq.id(R.id.txtLicenseNumber).getText().toString();
-        RestClient client = RestClient.getInstancePushLocation(MainActivity.this, "http://www.license.somee.com/LicenseService.svc/ActiveDevice");
+
+        final RestClient client = RestClient.getInstancePushLocation(MainActivity.this, "http://www.license.somee.com/LicenseService.svc/ActiveDevice");
         client.doPost(model);
+        client.callback = new ICallBack() {
+            @Override
+            public void callBackCall() {
+                if (client.isSuccess){
+                    StartPushDataActivity();
+                }else{
+                    Utils.showErrorMessage(MainActivity.this, "Your license key is not valid.");
+                }
+            }
+        };
     }
 
 }
